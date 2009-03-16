@@ -10,7 +10,6 @@ using System.Windows;
 
 namespace Spreadsheet {
     public partial class Page : UserControl {
-        private Model _data;
         private SpreadsheetViewModel _vm;
 
         public Page() {
@@ -18,14 +17,11 @@ namespace Spreadsheet {
             InitializeSpreadsheet();
         }
 
-        //public Model Model { get { return _data; } }
         public SpreadsheetModel Model { get { return _vm.Model; } }
 
         private void InitializeSpreadsheet() {
-            _data = new Model(15, 26);
             _vm = new SpreadsheetViewModel(15, 4);
             Spreadsheet.ItemsSource = _vm.DataSource;
-            //Spreadsheet.ItemsSource = _data.DataSource;
         }
 
         private void Spreadsheet_LoadingRow(object sender, DataGridRowEventArgs e) {
