@@ -13,6 +13,7 @@ public enum Tokens {
     Function,
     CellReference,
     Whitespace,
+    Terminator,
 }
 
 public class Tokenizer {
@@ -30,13 +31,14 @@ public class Tokenizer {
         return _buffer[_pos++];
     }
 
-    private char ReadCellReference(char c) {
+    private void ReadCellReference(char c) {
         _token = Tokens.CellReference;
         var start = _pos - 1;
         while (true) {
-            if (_pos == _buffer.Length || !Char.IsLetterOrDigit(c)) {
+            if (c == Char.MinValue|| !Char.IsLetterOrDigit(c)) {
                 _value = _buffer.Substring(start, _pos - start - 1);
-                return c;
+                _pos--;
+                return;
             }
             c = Read();
         }
@@ -49,13 +51,14 @@ public class Tokenizer {
         _pos = _buffer.Length;
     }
 
-    private char ReadNumber(char c) {
+    private void ReadNumber(char c) {
         _token = Tokens.Number;
         var start = _pos - 1;
         while (true) {
-            if (_pos == _buffer.Length || c == '.' || !Char.IsDigit(c)) {
-                _value = Double.Parse(_buffer.Substring(start, _pos - start));
-                return c;
+            if (c == Char.MinValue || !(c == '.' || Char.IsDigit(c))) {
+                _value = Double.Parse(_buffer.Substring(start, _pos - start - 1));
+                _pos--;
+                return;
             }
             c = Read();
         }
@@ -65,9 +68,13 @@ public class Tokenizer {
         char c = Read();
         while (true) {
             switch (c) {
+                case Char.MinValue:
+                    _token = Tokens.Terminator;
+                    return false;
                 case '\t':
                 case ' ':
                     _token = Tokens.Whitespace;
+                    c = Read();
                     break;
                 case '0':
                 case '1':
@@ -79,7 +86,7 @@ public class Tokenizer {
                 case '7':
                 case '8':
                 case '9':
-                    c = ReadNumber(c);
+                    ReadNumber(c);
                     break;
                 case '+':
                     _token = Tokens.Add;
@@ -98,14 +105,11 @@ public class Tokenizer {
                     return false;
                 default:
                     if (Char.IsLetter(c))
-                        c = ReadCellReference(c);
+                        ReadCellReference(c);
                     break;
             }
-            if (_pos >= _buffer.Length)
-                return false;
             if (_token != Tokens.Whitespace)
                 return true;
-            c = Read();
         }
     }
 

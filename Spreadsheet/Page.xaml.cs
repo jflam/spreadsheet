@@ -167,7 +167,7 @@ def sum2(*args):
         }
 
         public void SetCell(int col, string value) {
-            _cells[col] = value;
+            _cells[col] = value + Char.MinValue;
         }
 
         #region Embarrassing
