@@ -102,7 +102,7 @@ def sum2(*args):
 
         // Always returns underlying storage
         public string GetExpression(string cell) {
-            return _data[cell];
+            return _data.ContainsKey(cell) ? _data[cell] : String.Empty;
         }
     }
 
@@ -168,30 +168,33 @@ def sum2(*args):
     }
 
     public class RowViewModelBase : ViewModelBase {
-        internal SpreadsheetModel Model { get; private set; }
+        internal SpreadsheetViewModel ViewModel { get; private set; }
         private string _rowNumber;
 
-        public RowViewModelBase(SpreadsheetModel model, int rowNumber) {
-            Model = model;
+        public RowViewModelBase(SpreadsheetViewModel viewModel, int rowNumber) {
+            ViewModel = viewModel;
             _rowNumber = rowNumber.ToString();
         }
 
         public string GetCell(string column) {
-            return Model.GetCell(column + _rowNumber);
+            if (ViewModel.Editable)
+                return GetExpression(column);
+            else
+                return ViewModel.Model.GetCell(column + _rowNumber);
         }
 
         public string GetExpression(string column) {
-            return Model.GetExpression(column + _rowNumber);
+            return ViewModel.Model.GetExpression(column + _rowNumber);
         }
 
         public void SetCell(string column, string value) {
             base.OnPropertyChanged(column);
-            Model.SetCell(column + _rowNumber, value);
+            ViewModel.Model.SetCell(column + _rowNumber, value);
         }
     }
 
     public class RowViewModel : RowViewModelBase {
-        public RowViewModel(SpreadsheetModel model, int rowNumber) : base(model, rowNumber) { }
+        public RowViewModel(SpreadsheetViewModel viewModel, int rowNumber) : base(viewModel, rowNumber) { }
 
         public string A { get { return GetCell("A"); } set { SetCell("A", value); } }
         public string B { get { return GetCell("B"); } set { SetCell("B", value); } }
@@ -208,12 +211,14 @@ def sum2(*args):
             _model = new SpreadsheetModel();
 
             for (int i = 0; i < rows; i++) {
-                var row = new RowViewModel(_model, i + 1);
+                var row = new RowViewModel(this, i + 1);
                 _rows.Add(row);
             }
         }
 
         public IEnumerable DataSource { get { return _rows; } }
+        public bool Editable { get; set; }
+        public SpreadsheetModel Model { get { return _model; } }
 
         private int GetRowNumber(string cell) {
             for (int i = 0; i < cell.Length; i++) {

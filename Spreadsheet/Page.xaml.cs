@@ -36,12 +36,11 @@ namespace Spreadsheet {
         }
 
         private void Spreadsheet_BeginningEdit(object sender, DataGridBeginningEditEventArgs e) {
-            // tell model that we are entering edit mode
-            //_data.Editable = true;
+            _vm.Editable = true;
         }
 
         private void Spreadsheet_CellEditEnded(object sender, DataGridCellEditEndedEventArgs e) {
-            //_data.Editable = false;
+            _vm.Editable = false;
         }
     }
 }
