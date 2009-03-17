@@ -17,7 +17,7 @@ namespace Spreadsheet {
             InitializeSpreadsheet();
         }
 
-        public SpreadsheetModel Model { get { return _vm.Model; } }
+        public SpreadsheetViewModel Model { get { return _vm; } }
 
         private void InitializeSpreadsheet() {
             _vm = new SpreadsheetViewModel(15, 4);

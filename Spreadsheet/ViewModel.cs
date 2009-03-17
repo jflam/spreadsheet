@@ -176,15 +176,15 @@ def sum2(*args):
             _rowNumber = rowNumber.ToString();
         }
 
-        protected string GetCell(string column) {
+        public string GetCell(string column) {
             return Model.GetCell(column + _rowNumber);
         }
 
-        protected string GetExpression(string column) {
+        public string GetExpression(string column) {
             return Model.GetExpression(column + _rowNumber);
         }
 
-        protected void SetCell(string column, string value) {
+        public void SetCell(string column, string value) {
             base.OnPropertyChanged(column);
             Model.SetCell(column + _rowNumber, value);
         }
@@ -208,11 +208,37 @@ def sum2(*args):
             _model = new SpreadsheetModel();
 
             for (int i = 0; i < rows; i++) {
-                _rows.Add(new RowViewModel(_model, i + 1));
+                var row = new RowViewModel(_model, i + 1);
+                _rows.Add(row);
             }
         }
 
         public IEnumerable DataSource { get { return _rows; } }
-        public SpreadsheetModel Model { get { return _model; } }
+
+        private int GetRowNumber(string cell) {
+            for (int i = 0; i < cell.Length; i++) {
+                if (Char.IsDigit(cell[i])) {
+                    return Int32.Parse(cell.Substring(i)) - 1;
+                }
+            }
+            throw new ArgumentException("illegal cell reference: " + cell, "cell");
+        }
+
+        private string GetColumnName(string cell) {
+            for (int i = 0; i < cell.Length; i++) {
+                if (Char.IsDigit(cell[i])) {
+                    return cell.Substring(0, i);
+                }
+            }
+            throw new ArgumentException("illegal cell reference: " + cell, "cell");
+        }
+
+        public string GetCell(string cell) {
+            return _rows[GetRowNumber(cell)].GetCell(GetColumnName(cell));
+        }
+
+        public void SetCell(string cell, string value) {
+            _rows[GetRowNumber(cell)].SetCell(GetColumnName(cell), value);
+        }
     }
 }
