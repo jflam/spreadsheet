@@ -177,20 +177,14 @@ namespace Spreadsheet {
     public class SpreadsheetViewModel : ViewModelBase {
         private object _rows;
         private SpreadsheetModel _model;
-        private MethodInfo _getItem;
+        private GetItemDelegate _getItem;
+        private AddDelegate _add;
 
         public delegate void AddDelegate(object collection, object obj);
+        public delegate RowViewModelBase GetItemDelegate(object collection, int index);
 
-        public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
-            Type rowType = RowViewModelBase.Initialize(mb, cols);
-            Type gt = typeof(ObservableCollection<>);
-            Type cgt = gt.MakeGenericType(rowType);
-
+        private AddDelegate CreateAddDelegate(Type cgt, Type rowType) {
             MethodInfo add = cgt.GetMethod("Add");
-            _getItem = cgt.GetMethod("get_Item");
-
-            _rows = Activator.CreateInstance(cgt);
-            _model = new SpreadsheetModel();
 
             DynamicMethod dm = new DynamicMethod("Add", null, new Type[] { typeof(object), typeof(object) });
             var g = dm.GetILGenerator();
@@ -201,11 +195,37 @@ namespace Spreadsheet {
             g.Emit(OpCodes.Call, add);
             g.Emit(OpCodes.Ret);
 
-            AddDelegate m = (AddDelegate)dm.CreateDelegate(typeof(AddDelegate));
+            return (AddDelegate)dm.CreateDelegate(typeof(AddDelegate));
+        }
+
+        private GetItemDelegate CreateGetItemDelegate(Type cgt) {
+            MethodInfo getItem = cgt.GetMethod("get_Item");
+
+            DynamicMethod dm = new DynamicMethod("get_Item", typeof(RowViewModelBase), new Type[] { typeof(object), typeof(int) });
+            var g = dm.GetILGenerator();
+            g.Emit(OpCodes.Ldarg_0);
+            g.Emit(OpCodes.Castclass, cgt);
+            g.Emit(OpCodes.Ldarg_1);
+            g.Emit(OpCodes.Call, getItem);
+            g.Emit(OpCodes.Ret);
+
+            return (GetItemDelegate)dm.CreateDelegate(typeof(GetItemDelegate));
+        }
+
+        public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
+            Type rowType = RowViewModelBase.Initialize(mb, cols);
+            Type gt = typeof(ObservableCollection<>);
+            Type cgt = gt.MakeGenericType(rowType);
+
+            _getItem = CreateGetItemDelegate(cgt);
+            _add = CreateAddDelegate(cgt, rowType);
+
+            _rows = Activator.CreateInstance(cgt);
+            _model = new SpreadsheetModel();
             
             for (int i = 0; i < rows; i++) {
                 RowViewModelBase row = RowViewModelBase.Create(mb, this, i + 1, cols);
-                m(_rows, row);
+                _add(_rows, row);
             }
         }
 
@@ -214,16 +234,14 @@ namespace Spreadsheet {
         public SpreadsheetModel Model { get { return _model; } }
 
         public string GetCell(string cell) {
-            // TODO: build dynamic method to invoke this 
             var coord = CellParser.ParseCellName(cell);
-            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { coord.Row });
+            RowViewModelBase row = _getItem(_rows, coord.Row);
             return row.GetCell(coord.Col);
         }
 
         public void SetCell(string cell, string value) {
-            // TODO: build dynamic method to invoke this
             var coord = CellParser.ParseCellName(cell);
-            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { coord.Row });
+            RowViewModelBase row = _getItem(_rows, coord.Row);
             row.SetCell(coord.Col, value);
         }
     }
