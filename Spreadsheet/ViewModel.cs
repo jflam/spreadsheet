@@ -10,6 +10,54 @@ using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 
 namespace Spreadsheet {
+    public struct Coordinate {
+        public int Col;
+        public int Row;
+
+        public Coordinate(int row, int column) {
+            Row = row;
+            Col = column;
+        }
+    }
+
+    public static class CellParser {
+        const int A = (int)'A';
+        const int A1 = (int)'A' - 1;
+
+        // A-Z, AA-AZ, BA-BZ ... ZA-ZZ
+        public static string GenerateColumnName(int i) {
+            if (i < 26) {
+                return ((char)(A + i)).ToString();
+            } else if (i < 702) {
+                char lsd = (char)(A + i % 26);
+                char msd = (char)(A1 + i / 26);
+                return String.Concat(msd, lsd);
+            } else {
+                throw new ArgumentException("column index out of bounds: " + i.ToString());
+            }
+        }
+
+        // [A-Z]\d+ [A-ZA-Z]\d+
+        public static Coordinate ParseCellName(string cell) {
+            Debug.Assert(cell.Length >= 2);
+            Debug.Assert(Char.IsLetter(cell[0]));
+
+            int row, col;
+            if (Char.IsLetter(cell[1])) {
+                // AA-ZZ case
+                row = Int32.Parse(cell.Substring(2)) - 1;
+                int lsd = cell[1] - A;
+                int msd = cell[0] - A;
+                col = msd * 26 + lsd + 26;
+            } else {
+                row = Int32.Parse(cell.Substring(1)) - 1;
+                col = cell[0] - A;
+            }
+
+            return new Coordinate(row, col);
+        }
+    }
+
     public class SpreadsheetModel {
         private Dictionary<string, string> _data = new Dictionary<string, string>();
         private ScriptEngine _engine;
@@ -228,7 +276,6 @@ def sum2(*args):
             pb.SetGetMethod(gmb);
             pb.SetSetMethod(smb);
         }
-
         private static Type CreateType(ModuleBuilder mb, int columns) {
             var tb = mb.DefineType("Test", 
                 TypeAttributes.Public | TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
@@ -281,7 +328,6 @@ def sum2(*args):
     public class SpreadsheetViewModel : ViewModelBase {
         private object _rows;
         private SpreadsheetModel _model;
-        private ModuleBuilder _mb;
         private MethodInfo _getItem;
 
         public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
