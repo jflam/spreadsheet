@@ -20,4 +20,3 @@ describe "Spreadsheet" do
     $model.get_cell('A2').should.equal '4'.to_clr_string
   end
 end
-

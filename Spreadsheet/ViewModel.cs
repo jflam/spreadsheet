@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Reflection;
+using System.Reflection.Emit;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 
@@ -191,6 +194,87 @@ def sum2(*args):
             base.OnPropertyChanged(column);
             ViewModel.Model.SetCell(column + _rowNumber, value);
         }
+
+        public static Type RowType;
+
+        private static void CreateProperty(string name, TypeBuilder tb, MethodInfo bgcmi, MethodInfo bscmi) {
+            // define getter
+            var gmb = tb.DefineMethod("get_" + name, 
+                MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
+                typeof(string),
+                null);
+
+            var g = gmb.GetILGenerator();
+            g.Emit(OpCodes.Ldarg_0);
+            g.Emit(OpCodes.Ldstr, name);
+            g.Emit(OpCodes.Call, bgcmi);
+            g.Emit(OpCodes.Ret);
+
+            // define setter
+            var smb = tb.DefineMethod("set_" + name,
+                MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
+                null,
+                new Type[] { typeof(string) });
+
+            g = smb.GetILGenerator();
+            g.Emit(OpCodes.Ldarg_0);
+            g.Emit(OpCodes.Ldstr, name);
+            g.Emit(OpCodes.Ldarg_1);
+            g.Emit(OpCodes.Call, bscmi);
+            g.Emit(OpCodes.Ret);
+            
+            // define properties
+            var pb = tb.DefineProperty(name, PropertyAttributes.None, typeof(string), null);
+            pb.SetGetMethod(gmb);
+            pb.SetSetMethod(smb);
+        }
+
+        private static Type CreateType(ModuleBuilder mb, int columns) {
+            var tb = mb.DefineType("Test", 
+                TypeAttributes.Public | TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
+                typeof(RowViewModelBase));
+
+            // base constructor reference
+            var bc = typeof(RowViewModelBase).GetConstructor(new Type[] { typeof(SpreadsheetViewModel), typeof(int) });
+
+            // define constructor
+            var cb = tb.DefineConstructor(MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                CallingConventions.Standard, 
+                new Type[] { typeof(SpreadsheetViewModel), typeof(int) });
+            var g = cb.GetILGenerator();
+            g.Emit(OpCodes.Ldarg_0);
+            g.Emit(OpCodes.Ldarg_1);
+            g.Emit(OpCodes.Ldarg_2);
+            g.Emit(OpCodes.Call, bc);
+            g.Emit(OpCodes.Ret);
+
+            // base GetCell methodinfo
+            var bgcmi = typeof(RowViewModelBase).GetMethod("GetCell");
+            var bscmi = typeof(RowViewModelBase).GetMethod("SetCell");
+
+            // A-Z only
+            Debug.Assert(columns <= 26);
+
+            for (int i = 0; i < columns; i++) {
+                // TODO: implement a helper that does the right thing with column names A-Z AA-ZZ
+                char c = (char)((int)'A' + i);
+                CreateProperty(c.ToString(), tb, bgcmi, bscmi);
+            }
+            
+            return tb.CreateType();
+        }
+
+        public static Type Initialize(ModuleBuilder mb, int columns) {
+            RowType = CreateType(mb, columns);
+            return RowType;
+        }
+
+        public static RowViewModelBase Create(ModuleBuilder mb, SpreadsheetViewModel viewModel, int rowNumber, int columns) {
+            if (RowType == null)
+                RowType = CreateType(mb, columns);
+
+            return (RowViewModelBase)Activator.CreateInstance(RowType, viewModel, rowNumber);
+        }
     }
 
     public class RowViewModel : RowViewModelBase {
@@ -202,21 +286,51 @@ def sum2(*args):
         public string D { get { return GetCell("D"); } set { SetCell("D", value); } }
     }
 
-    public class SpreadsheetViewModel : ViewModelBase {
-        private ObservableCollection<RowViewModel> _rows;
-        private SpreadsheetModel _model;
+    public class DelegatingObservableCollection {
+        private object _collection;
 
-        public SpreadsheetViewModel(int rows, int cols) {
-            _rows = new ObservableCollection<RowViewModel>();
+        public DelegatingObservableCollection(Type type) {
+            Type gt = typeof(ObservableCollection<>);
+            Type cgt = gt.MakeGenericType(type);
+            _collection = Activator.CreateInstance(cgt);
+
+            // Build a delegate that knows how to invoke Add<type>
+            MethodInfo add = cgt.GetMethod("Add");
+        }
+    }
+
+    // TODO: build a delegate system that will invoke Add and indexer against OC<T>
+    public class SpreadsheetViewModel : ViewModelBase {
+        //private ObservableCollection<RowViewModel> _rows;
+        private object _rows;
+        private SpreadsheetModel _model;
+        private ModuleBuilder _mb;
+
+        public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
+            // make dynamic observable collection of T
+            Type rowType = RowViewModelBase.Initialize(mb, cols);
+            Type rvmt = typeof(RowViewModel);
+            var p1 = rowType.GetProperties();
+            var p2 = rvmt.GetProperties();
+
+            Type gt = typeof(ObservableCollection<>);
+            Type cgt = gt.MakeGenericType(rowType);
+            MethodInfo add = cgt.GetMethod("Add");
+
+            _rows = Activator.CreateInstance(cgt);
+            //_rows = new ObservableCollection<RowViewModel>();
             _model = new SpreadsheetModel();
 
             for (int i = 0; i < rows; i++) {
-                var row = new RowViewModel(this, i + 1);
-                _rows.Add(row);
+                //var row = new RowViewModel(this, i + 1);
+                //_rows.Add(row);
+
+                RowViewModelBase r2 = RowViewModelBase.Create(mb, this, i + 1, cols);
+                add.Invoke(_rows, new object[] { r2 });
             }
         }
 
-        public IEnumerable DataSource { get { return _rows; } }
+        public IEnumerable DataSource { get { return (IEnumerable)_rows; } }
         public bool Editable { get; set; }
         public SpreadsheetModel Model { get { return _model; } }
 
@@ -239,11 +353,12 @@ def sum2(*args):
         }
 
         public string GetCell(string cell) {
-            return _rows[GetRowNumber(cell)].GetCell(GetColumnName(cell));
+            return string.Empty;
+            //return _rows[GetRowNumber(cell)].GetCell(GetColumnName(cell));
         }
 
         public void SetCell(string cell, string value) {
-            _rows[GetRowNumber(cell)].SetCell(GetColumnName(cell), value);
+            //_rows[GetRowNumber(cell)].SetCell(GetColumnName(cell), value);
         }
     }
 }

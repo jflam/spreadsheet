@@ -7,6 +7,8 @@ using System.Windows.Input;
 using Microsoft.Scripting.Hosting;
 using IronPython.Hosting;
 using System.Windows;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Spreadsheet {
     public partial class Page : UserControl {
@@ -20,7 +22,10 @@ namespace Spreadsheet {
         public SpreadsheetViewModel Model { get { return _vm; } }
 
         private void InitializeSpreadsheet() {
-            _vm = new SpreadsheetViewModel(15, 4);
+            var name = new AssemblyName("test");
+            var ab = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+            var mb = ab.DefineDynamicModule("test");
+            _vm = new SpreadsheetViewModel(mb, 15, 4);
             Spreadsheet.ItemsSource = _vm.DataSource;
         }
 
