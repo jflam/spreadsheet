@@ -325,6 +325,8 @@ def sum2(*args):
         private SpreadsheetModel _model;
         private MethodInfo _getItem;
 
+        public delegate void AddDelegate(object collection, object obj);
+
         public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
             Type rowType = RowViewModelBase.Initialize(mb, cols);
             Type gt = typeof(ObservableCollection<>);
@@ -336,10 +338,22 @@ def sum2(*args):
             _rows = Activator.CreateInstance(cgt);
             _model = new SpreadsheetModel();
 
+            DynamicMethod dm = new DynamicMethod("Add", null, new Type[] { typeof(object), typeof(object) });
+            var g = dm.GetILGenerator();
+            g.Emit(OpCodes.Ldarg_0);
+            g.Emit(OpCodes.Castclass, cgt);
+            g.Emit(OpCodes.Ldarg_1);
+            g.Emit(OpCodes.Castclass, rowType);
+            g.Emit(OpCodes.Call, add);
+            g.Emit(OpCodes.Ret);
+
+            AddDelegate m = (AddDelegate)dm.CreateDelegate(typeof(AddDelegate));
+            
             for (int i = 0; i < rows; i++) {
                 RowViewModelBase row = RowViewModelBase.Create(mb, this, i + 1, cols);
                 // TODO: define dynamic method to do this invocation
-                add.Invoke(_rows, new object[] { row });
+                m(_rows, row);
+                //add.Invoke(_rows, new object[] { row });
             }
         }
 

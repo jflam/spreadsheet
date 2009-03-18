@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Microsoft.Scripting.Hosting;
-using IronPython.Hosting;
-using System.Windows;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Spreadsheet {
     public partial class Page : UserControl {
