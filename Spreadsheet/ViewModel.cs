@@ -277,56 +277,28 @@ def sum2(*args):
         }
     }
 
-    public class RowViewModel : RowViewModelBase {
-        public RowViewModel(SpreadsheetViewModel viewModel, int rowNumber) : base(viewModel, rowNumber) { }
-
-        public string A { get { return GetCell("A"); } set { SetCell("A", value); } }
-        public string B { get { return GetCell("B"); } set { SetCell("B", value); } }
-        public string C { get { return GetCell("C"); } set { SetCell("C", value); } }
-        public string D { get { return GetCell("D"); } set { SetCell("D", value); } }
-    }
-
-    public class DelegatingObservableCollection {
-        private object _collection;
-
-        public DelegatingObservableCollection(Type type) {
-            Type gt = typeof(ObservableCollection<>);
-            Type cgt = gt.MakeGenericType(type);
-            _collection = Activator.CreateInstance(cgt);
-
-            // Build a delegate that knows how to invoke Add<type>
-            MethodInfo add = cgt.GetMethod("Add");
-        }
-    }
-
     // TODO: build a delegate system that will invoke Add and indexer against OC<T>
     public class SpreadsheetViewModel : ViewModelBase {
-        //private ObservableCollection<RowViewModel> _rows;
         private object _rows;
         private SpreadsheetModel _model;
         private ModuleBuilder _mb;
+        private MethodInfo _getItem;
 
         public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
-            // make dynamic observable collection of T
             Type rowType = RowViewModelBase.Initialize(mb, cols);
-            Type rvmt = typeof(RowViewModel);
-            var p1 = rowType.GetProperties();
-            var p2 = rvmt.GetProperties();
-
             Type gt = typeof(ObservableCollection<>);
             Type cgt = gt.MakeGenericType(rowType);
+
             MethodInfo add = cgt.GetMethod("Add");
+            _getItem = cgt.GetMethod("get_Item");
 
             _rows = Activator.CreateInstance(cgt);
-            //_rows = new ObservableCollection<RowViewModel>();
             _model = new SpreadsheetModel();
 
             for (int i = 0; i < rows; i++) {
-                //var row = new RowViewModel(this, i + 1);
-                //_rows.Add(row);
-
-                RowViewModelBase r2 = RowViewModelBase.Create(mb, this, i + 1, cols);
-                add.Invoke(_rows, new object[] { r2 });
+                RowViewModelBase row = RowViewModelBase.Create(mb, this, i + 1, cols);
+                // TODO: define dynamic method to do this invocation
+                add.Invoke(_rows, new object[] { row });
             }
         }
 
@@ -353,12 +325,15 @@ def sum2(*args):
         }
 
         public string GetCell(string cell) {
-            return string.Empty;
-            //return _rows[GetRowNumber(cell)].GetCell(GetColumnName(cell));
+            // TODO: build dynamic method to invoke this 
+            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { GetRowNumber(cell) });
+            return row.GetCell(GetColumnName(cell));
         }
 
         public void SetCell(string cell, string value) {
-            //_rows[GetRowNumber(cell)].SetCell(GetColumnName(cell), value);
+            // TODO: build dynamic method to invoke this
+            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { GetRowNumber(cell) });
+            row.SetCell(GetColumnName(cell), value);
         }
     }
 }
