@@ -38,15 +38,15 @@ describe "CellParser" do
   should 'parse cell names correctly' do
     c = CellParser.parse_cell_name('A1')
     c.row.should.equal 0
-    c.col.should.equal 0
+    c.col.should.equal 'A'.to_clr_string
     c = CellParser.parse_cell_name('A99')
     c.row.should.equal 98
-    c.col.should.equal 0
+    c.col.should.equal 'A'.to_clr_string 
     c = CellParser.parse_cell_name('AA1')
     c.row.should.equal 0
-    c.col.should.equal 26
+    c.col.should.equal 'AA'.to_clr_string 
     c = CellParser.parse_cell_name('ZZ1')
     c.row.should.equal 0
-    c.col.should.equal 701
+    c.col.should.equal 'ZZ'.to_clr_string
   end
 end

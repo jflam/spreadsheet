@@ -10,11 +10,11 @@ using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 
 namespace Spreadsheet {
-    public struct Coordinate {
-        public int Col;
+    public class Coordinate {
+        public string Col;
         public int Row;
 
-        public Coordinate(int row, int column) {
+        public Coordinate(int row, string column) {
             Row = row;
             Col = column;
         }
@@ -42,16 +42,15 @@ namespace Spreadsheet {
             Debug.Assert(cell.Length >= 2);
             Debug.Assert(Char.IsLetter(cell[0]));
 
-            int row, col;
+            int row;
+            string col;
             if (Char.IsLetter(cell[1])) {
                 // AA-ZZ case
                 row = Int32.Parse(cell.Substring(2)) - 1;
-                int lsd = cell[1] - A;
-                int msd = cell[0] - A;
-                col = msd * 26 + lsd + 26;
+                col = cell.Substring(0, 2);
             } else {
                 row = Int32.Parse(cell.Substring(1)) - 1;
-                col = cell[0] - A;
+                col = cell[0].ToString();
             }
 
             return new Coordinate(row, col);
@@ -276,6 +275,7 @@ def sum2(*args):
             pb.SetGetMethod(gmb);
             pb.SetSetMethod(smb);
         }
+
         private static Type CreateType(ModuleBuilder mb, int columns) {
             var tb = mb.DefineType("Test", 
                 TypeAttributes.Public | TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
@@ -299,13 +299,8 @@ def sum2(*args):
             var bgcmi = typeof(RowViewModelBase).GetMethod("GetCell");
             var bscmi = typeof(RowViewModelBase).GetMethod("SetCell");
 
-            // A-Z only
-            Debug.Assert(columns <= 26);
-
             for (int i = 0; i < columns; i++) {
-                // TODO: implement a helper that does the right thing with column names A-Z AA-ZZ
-                char c = (char)((int)'A' + i);
-                CreateProperty(c.ToString(), tb, bgcmi, bscmi);
+                CreateProperty(CellParser.GenerateColumnName(i), tb, bgcmi, bscmi);
             }
             
             return tb.CreateType();
@@ -352,34 +347,18 @@ def sum2(*args):
         public bool Editable { get; set; }
         public SpreadsheetModel Model { get { return _model; } }
 
-        private int GetRowNumber(string cell) {
-            for (int i = 0; i < cell.Length; i++) {
-                if (Char.IsDigit(cell[i])) {
-                    return Int32.Parse(cell.Substring(i)) - 1;
-                }
-            }
-            throw new ArgumentException("illegal cell reference: " + cell, "cell");
-        }
-
-        private string GetColumnName(string cell) {
-            for (int i = 0; i < cell.Length; i++) {
-                if (Char.IsDigit(cell[i])) {
-                    return cell.Substring(0, i);
-                }
-            }
-            throw new ArgumentException("illegal cell reference: " + cell, "cell");
-        }
-
         public string GetCell(string cell) {
             // TODO: build dynamic method to invoke this 
-            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { GetRowNumber(cell) });
-            return row.GetCell(GetColumnName(cell));
+            var coord = CellParser.ParseCellName(cell);
+            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { coord.Row });
+            return row.GetCell(coord.Col);
         }
 
         public void SetCell(string cell, string value) {
             // TODO: build dynamic method to invoke this
-            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { GetRowNumber(cell) });
-            row.SetCell(GetColumnName(cell), value);
+            var coord = CellParser.ParseCellName(cell);
+            RowViewModelBase row = (RowViewModelBase)_getItem.Invoke(_rows, new object[] { coord.Row });
+            row.SetCell(coord.Col, value);
         }
     }
 }

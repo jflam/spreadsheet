@@ -25,7 +25,7 @@ namespace Spreadsheet {
             var name = new AssemblyName("test");
             var ab = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
             var mb = ab.DefineDynamicModule("test");
-            _vm = new SpreadsheetViewModel(mb, 15, 4);
+            _vm = new SpreadsheetViewModel(mb, 15, 52);
             Spreadsheet.ItemsSource = _vm.DataSource;
         }
 
