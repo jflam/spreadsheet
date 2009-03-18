@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
-using IronPython.Hosting;
-using Microsoft.Scripting.Hosting;
 
 namespace Spreadsheet {
     public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable {
@@ -173,7 +169,6 @@ namespace Spreadsheet {
         }
     }
 
-    // TODO: build a delegate system that will invoke Add and indexer against OC<T>
     public class SpreadsheetViewModel : ViewModelBase {
         private object _rows;
         private SpreadsheetModel _model;
