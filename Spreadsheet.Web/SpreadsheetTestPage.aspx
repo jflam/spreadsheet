@@ -9,10 +9,6 @@
 <head runat="server">
     <title>Spreadsheet</title>
     <style type="text/css">
-    html, body {
-	    height: 100%;
-	    overflow: auto;
-    }
     body {
 	    padding: 0;
 	    margin: 0;
@@ -22,8 +18,8 @@
 <body>
     <form id="form1" runat="server" style="height:500">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-        <div  style="height:100%;">
-            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" MinimumVersion="3.0.40307.0" Width="100%" Height="100%" />
+        <div>
+            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" MinimumVersion="3.0.40307.0" Width="100%" Height="360" />
         </div>
     </form>
 </body>

@@ -1,16 +1,26 @@
-﻿<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment"
+<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 >
     <Deployment.Parts>
     </Deployment.Parts>
 
-    <!-- Uncomment the markup and update the fields below to make your application offline enabled
+    <Deployment.ExternalParts>
+        <!-- Required: Microsoft.Scripting(Core, Silverlight, ExtensionAttribute) -->
+        <ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=146361" />
+
+        <!-- IronRuby and IronRuby.Libraries -->
+        <!-- <ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=146359" /> -->
+
+        <!-- IronPython and IronPython.Modules -->
+        <ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=146360" />
+    </Deployment.ExternalParts>
+
+    <!-- Uncomment the markup and update the fields below to make your application offline enabled -->
     <Deployment.ApplicationIdentity>
         <ApplicationIdentity 
-            ShortName="Out of Browser Silverlight Application" 
-            Title="Window Title of Your Silverlight Application">
-            <ApplicationIdentity.Blurb>Description of your Silverlight application</ApplicationIdentity.Blurb>
+            ShortName="Spreadsheet"
+            Title="A simple Silverlight spreadsheet">
+            <ApplicationIdentity.Blurb>A simple Silverlight spreadsheet</ApplicationIdentity.Blurb>
         </ApplicationIdentity>
     </Deployment.ApplicationIdentity>
-    -->
 </Deployment>

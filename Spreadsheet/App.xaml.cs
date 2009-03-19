@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Resources;
 
+using Microsoft.Scripting.Silverlight;
+
 namespace Spreadsheet {
     public partial class App : Application {
 
@@ -17,7 +19,9 @@ namespace Spreadsheet {
         }
 
         private void Application_Startup(object sender, StartupEventArgs e) {
-            this.RootVisual = new Page();
+            DynamicApplication.LoadAssemblies(delegate() {
+                this.RootVisual = new Page();
+            });
 
             // download eggs
             if (HtmlPage.Document.QueryString.ContainsKey("test")) {
