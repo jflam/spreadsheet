@@ -9,13 +9,15 @@ namespace Spreadsheet {
         private ScriptEngine _engine;
         private ScriptScope _scope;
 
-        public SpreadsheetModel() { }
+        public SpreadsheetModel() {
+            InitializeScripts();
+        }
 
         private void InitializeScripts() {
             _engine = Python.CreateEngine();
             _scope = _engine.Runtime.CreateScope();
             var sum = @"
-def sum2(*args):
+def sum(*args):
     sum = 0
     for arg in args:
         sum += arg
@@ -88,7 +90,7 @@ def sum2(*args):
             if (_data.ContainsKey(cell)) {
                 var val = _data[cell];
                 if (val.StartsWith("=") || val.StartsWith("@")) {
-                    return Calc(val.Substring(1) + Char.MinValue);
+                    return Calc(val + Char.MinValue);
                 } else {
                     return val;
                 }

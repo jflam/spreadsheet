@@ -47,7 +47,7 @@ public class Tokenizer {
     private void ReadFunction(char c) {
         _token = Tokens.Function;
         // Rest of buffer is assumed to be function expression
-        _value = _buffer.Substring(_pos);
+        _value = _buffer.Substring(_pos, _buffer.Length - _pos - 1);
         _pos = _buffer.Length;
     }
 
