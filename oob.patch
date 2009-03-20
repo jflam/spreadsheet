@@ -1,0 +1,67 @@
+diff --git a/Spreadsheet/Properties/AppManifest.xml b/Spreadsheet/Properties/AppManifest.xml
+index 01e41e1..333ba68 100644
+--- a/Spreadsheet/Properties/AppManifest.xml
++++ b/Spreadsheet/Properties/AppManifest.xml
+@@ -6,13 +6,13 @@
+ 
+     <Deployment.ExternalParts>
+         <!-- Microsoft.Scripting(Core, Silverlight, ExtensionAttribute) -->
+-        <ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=147026" />
++        <!--<ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=147026" />-->
+ 
+         <!-- IronRuby and IronRuby.Libraries -->
+         <!--<ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=147027" />-->
+ 
+         <!-- IronPython and IronPython.Modules -->
+-        <ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=147028" />
++        <!--<ExtensionPart Source="http://go.microsoft.com/fwlink/?LinkID=147028" />-->
+     </Deployment.ExternalParts>
+ 
+     <!-- Uncomment the markup and update the fields below to make your application offline enabled -->
+diff --git a/Spreadsheet/Spreadsheet.csproj b/Spreadsheet/Spreadsheet.csproj
+index d34676f..b1bb621 100644
+--- a/Spreadsheet/Spreadsheet.csproj
++++ b/Spreadsheet/Spreadsheet.csproj
+@@ -22,7 +22,7 @@
+     <TestPageFileName>TestPage.html</TestPageFileName>
+     <CreateTestPage>true</CreateTestPage>
+     <ValidateXaml>true</ValidateXaml>
+-    <UsePlatformExtensions>true</UsePlatformExtensions>
++    <UsePlatformExtensions>false</UsePlatformExtensions>
+     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+     <LinkedServerProject>
+     </LinkedServerProject>
+@@ -51,27 +51,27 @@
+   <ItemGroup>
+     <Reference Include="IronPython, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>libs\IronPython.dll</HintPath>
+-      <Private>False</Private>
++      <Private>True</Private>
+     </Reference>
+     <Reference Include="IronPython.Modules, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>libs\IronPython.Modules.dll</HintPath>
+-      <Private>False</Private>
++      <Private>True</Private>
+     </Reference>
+     <Reference Include="Microsoft.Scripting, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>libs\Microsoft.Scripting.dll</HintPath>
+-      <Private>False</Private>
++      <Private>True</Private>
+     </Reference>
+     <Reference Include="Microsoft.Scripting.Core, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>libs\Microsoft.Scripting.Core.dll</HintPath>
+-      <Private>False</Private>
++      <Private>True</Private>
+     </Reference>
+     <Reference Include="Microsoft.Scripting.ExtensionAttribute, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>libs\Microsoft.Scripting.ExtensionAttribute.dll</HintPath>
+-      <Private>False</Private>
++      <Private>True</Private>
+     </Reference>
+     <Reference Include="Microsoft.Scripting.Silverlight, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>libs\Microsoft.Scripting.Silverlight.dll</HintPath>
+-      <Private>False</Private>
++      <Private>True</Private>
+     </Reference>
+     <Reference Include="System.Windows" />
+     <Reference Include="mscorlib" />
