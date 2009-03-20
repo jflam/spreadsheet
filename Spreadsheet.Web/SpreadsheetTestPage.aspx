@@ -19,7 +19,7 @@
     <form id="form1" runat="server" style="height:500">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
         <div>
-            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" MinimumVersion="3.0.40307.0" Width="100%" Height="360" />
+            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" Windowless="true" MinimumVersion="3.0.40307.0" Width="100%" Height="360" />
         </div>
     </form>
 </body>

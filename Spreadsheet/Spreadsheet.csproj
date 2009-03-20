@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -22,7 +22,7 @@
     <TestPageFileName>TestPage.html</TestPageFileName>
     <CreateTestPage>true</CreateTestPage>
     <ValidateXaml>true</ValidateXaml>
-    <UsePlatformExtensions>true</UsePlatformExtensions>
+    <UsePlatformExtensions>false</UsePlatformExtensions>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
     <LinkedServerProject>
     </LinkedServerProject>
@@ -51,27 +51,27 @@
   <ItemGroup>
     <Reference Include="IronPython, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>libs\IronPython.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>libs\IronPython.Modules.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>libs\Microsoft.Scripting.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting.Core, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>libs\Microsoft.Scripting.Core.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting.ExtensionAttribute, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>libs\Microsoft.Scripting.ExtensionAttribute.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting.Silverlight, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>libs\Microsoft.Scripting.Silverlight.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />

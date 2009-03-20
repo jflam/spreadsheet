@@ -74,7 +74,7 @@
         </Style>
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot" Background="White">
-        <basics:TabControl>
+        <basics:TabControl TabStripPlacement="Bottom">
             <basics:TabItem Header="Worksheet">
                 <data:DataGrid x:Name="Spreadsheet" 
                        IsReadOnly="False"
@@ -93,7 +93,17 @@
                 </data:DataGrid>
             </basics:TabItem>
             <basics:TabItem Header="Code">
-                <TextBox FontFamily="Consolas" FontSize="18" AcceptsReturn="True" Name="CodeTextBox" KeyUp="TextBox_KeyUp" KeyDown="TextBox_KeyDown" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" FontSize="18" FontFamily="Courier New" AcceptsReturn="True" Name="CodeTextBox" KeyDown="TextBox_KeyDown" />
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Height="Auto">
+                        <Button Name="LoadButton" Content="Load" Click="LoadButton_Click" />
+                        <Button Name="SaveButton" Content="Save" Click="SaveButton_Click" />
+                    </StackPanel>
+                </Grid>
             </basics:TabItem>
         </basics:TabControl>
     </Grid>
