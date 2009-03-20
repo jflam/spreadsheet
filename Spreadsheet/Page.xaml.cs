@@ -122,7 +122,7 @@ namespace Spreadsheet {
         }
 
         void LoadFunctions_Completed(object sender, DownloadStringCompletedEventArgs e) {
-            _extensions.Code = e.Result;
+            _extensions.Execute(e.Result);
             CodeTextBox.Text = e.Result;
         }
 

@@ -88,8 +88,8 @@ namespace Spreadsheet {
         }
 
         public void SetCell(string column, string value) {
-            base.OnPropertyChanged(column);
             ViewModel.Model.SetCell(column + _rowNumber, value);
+            base.OnPropertyChanged(column);
         }
 
         public static Type RowType;
