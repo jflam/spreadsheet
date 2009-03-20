@@ -6,24 +6,10 @@ using Microsoft.Scripting.Hosting;
 namespace Spreadsheet {
     public class SpreadsheetModel {
         private Dictionary<string, string> _data = new Dictionary<string, string>();
-        private ScriptEngine _engine;
-        private ScriptScope _scope;
+        private Extensions _extensions;
 
-        public SpreadsheetModel() {
-            InitializeScripts();
-        }
-
-        private void InitializeScripts() {
-            _engine = Python.CreateEngine();
-            _scope = _engine.Runtime.CreateScope();
-            var sum = @"
-def sum(*args):
-    sum = 0
-    for arg in args:
-        sum += arg
-    return sum
-";
-            _engine.Execute(sum, _scope);
+        public SpreadsheetModel(Extensions extensions) {
+            _extensions = extensions;
         }
 
         public string Calc(string expression) {
@@ -73,7 +59,7 @@ def sum(*args):
                         }
                         break;
                     case Tokens.Function:
-                        return _engine.Execute(tokenizer.CurrentValue.ToString(), _scope).ToString();
+                        return _extensions.Execute(tokenizer.CurrentValue.ToString()).ToString();
                 }
                 if (!resume)
                     break;

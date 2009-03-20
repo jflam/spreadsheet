@@ -7,6 +7,7 @@ using System.Windows.Input;
 namespace Spreadsheet {
     public partial class Page : UserControl {
         private SpreadsheetViewModel _vm;
+        private Extensions _extensions;
 
         public Page() {
             InitializeComponent();
@@ -19,7 +20,9 @@ namespace Spreadsheet {
             var name = new AssemblyName("test");
             var ab = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
             var mb = ab.DefineDynamicModule("test");
-            _vm = new SpreadsheetViewModel(mb, 15, 52);
+            _extensions = new Extensions();
+            CodeTextBox.Text = _extensions.Code.TrimStart();
+            _vm = new SpreadsheetViewModel(_extensions, mb, 15, 52);
             Spreadsheet.ItemsSource = _vm.DataSource;
         }
 
@@ -40,6 +43,16 @@ namespace Spreadsheet {
 
         private void Spreadsheet_CellEditEnded(object sender, DataGridCellEditEndedEventArgs e) {
             _vm.Editable = false;
+        }
+
+        private void TextBox_KeyUp(object sender, KeyEventArgs e) {
+        }
+
+        bool _isCtrl = false;
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e) {
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
+                _extensions.Execute(CodeTextBox.Text);
         }
     }
 }

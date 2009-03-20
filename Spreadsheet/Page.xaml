@@ -1,4 +1,4 @@
-﻿<UserControl xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"  x:Class="Spreadsheet.Page"
+﻿<UserControl xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"  xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"  x:Class="Spreadsheet.Page"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:local="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"    
@@ -74,7 +74,9 @@
         </Style>
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot" Background="White">
-        <data:DataGrid x:Name="Spreadsheet" 
+        <basics:TabControl>
+            <basics:TabItem Header="Worksheet">
+                <data:DataGrid x:Name="Spreadsheet" 
                        IsReadOnly="False"
                        GridLinesVisibility="All"
                        HeadersVisibility="All"
@@ -88,6 +90,11 @@
                        ColumnWidth="100"
                        LoadingRow="Spreadsheet_LoadingRow"
                        AutoGenerateColumns="True" >
-        </data:DataGrid>
+                </data:DataGrid>
+            </basics:TabItem>
+            <basics:TabItem Header="Code">
+                <TextBox FontFamily="Consolas" FontSize="18" AcceptsReturn="True" Name="CodeTextBox" KeyUp="TextBox_KeyUp" KeyDown="TextBox_KeyDown" />
+            </basics:TabItem>
+        </basics:TabControl>
     </Grid>
 </UserControl>
