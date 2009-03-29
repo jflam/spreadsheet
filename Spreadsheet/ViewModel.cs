@@ -88,8 +88,8 @@ namespace Spreadsheet {
         }
 
         public void SetCell(string column, string value) {
-            base.OnPropertyChanged(column);
             ViewModel.Model.SetCell(column + _rowNumber, value);
+            base.OnPropertyChanged(column);
         }
 
         public static Type RowType;
@@ -207,7 +207,7 @@ namespace Spreadsheet {
             return (GetItemDelegate)dm.CreateDelegate(typeof(GetItemDelegate));
         }
 
-        public SpreadsheetViewModel(ModuleBuilder mb, int rows, int cols) {
+        public SpreadsheetViewModel(Extensions extensions, ModuleBuilder mb, int rows, int cols) {
             Type rowType = RowViewModelBase.Initialize(mb, cols);
             Type gt = typeof(ObservableCollection<>);
             Type cgt = gt.MakeGenericType(rowType);
@@ -216,7 +216,7 @@ namespace Spreadsheet {
             _add = CreateAddDelegate(cgt, rowType);
 
             _rows = Activator.CreateInstance(cgt);
-            _model = new SpreadsheetModel();
+            _model = new SpreadsheetModel(extensions);
             
             for (int i = 0; i < rows; i++) {
                 RowViewModelBase row = RowViewModelBase.Create(mb, this, i + 1, cols);

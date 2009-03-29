@@ -14,13 +14,51 @@
       margin: 0;
     }
     </style>
+    <link rel="Stylesheet" href="Content/Site.css" />
 </head>
 <body>
     <form id="form1" runat="server" style="height:500">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
         <div>
-            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" MinimumVersion="3.0.40307.0" Width="100%" Height="360" Windowless="True" />
+            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" Windowless="true" MinimumVersion="3.0.40307.0" Width="100%" Height="360" />
         </div>
     </form>
+  <style type="text/css">
+    div.silverlightDlrWindow,
+    div.silverlightDlrWindowMenu,
+    #silverlightDlrRepl, 
+    #silverlightDlrReplCode, 
+    #silverlightDlrReplResult, 
+    .silverlightDlrReplPrompt {
+      font-size: 20px;
+    }
+
+    div.silverlightDlrWindow {
+      bottom: 40px;
+      border: 4px solid black;
+    }
+
+    div.silverlightDlrWindowMenu {
+      height: 30px;
+    }
+
+    div.silverlightDlrWindowMenu a.active {
+      border-bottom: 4px solid black;
+      border-left: 4px solid black;
+      border-right: 4px solid black;
+      padding-top: 9px;
+    }
+
+    #silverlightDlrRepl {
+      padding: 10px;
+    }
+
+    #silverlightDlrRepl, 
+    #silverlightDlrReplCode, 
+    #silverlightDlrReplResult, 
+    .silverlightDlrReplPrompt {
+      line-height: 24px;
+    }
+  </style>
 </body>
 </html>
