@@ -32,7 +32,7 @@
     .silverlightDlrReplPrompt {
       font-size: 20px;
     }
-
+    
     div.silverlightDlrWindow {
       bottom: 40px;
       border: 4px solid black;
@@ -58,6 +58,10 @@
     #silverlightDlrReplResult, 
     .silverlightDlrReplPrompt {
       line-height: 24px;
+    }
+
+    #silverlightDlrReplCode {
+      height: 24px;
     }
   </style>
 </body>
