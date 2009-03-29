@@ -1,0 +1,5 @@
+Eggs.config(
+  :tests => [
+    :spreadsheet
+  ]
+)

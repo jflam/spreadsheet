@@ -1,5 +1,20 @@
 include System::Windows
 
+# Run code with file-system operations pointed
+# at the application's xap file, since the tests
+# run in their own
+def run_from_application
+  tests = DynamicApplication.xap_file
+  DynamicApplication.xap_file = nil
+  yield
+  DynamicApplication.xap_file = tests
+end
+
+run_from_application do
+  require 'Spreadsheet'
+  include Spreadsheet
+end
+
 $model = Application.current.root_visual.model
 
 describe "Spreadsheet" do
@@ -20,9 +35,6 @@ describe "Spreadsheet" do
     $model.get_cell('A2').should.equal '4'.to_clr_string
   end
 end
-
-require 'Spreadsheet'
-include Spreadsheet
 
 describe "CellParser" do
   should 'generate column names correctly' do

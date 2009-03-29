@@ -1,9 +1,10 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheet", "Spreadsheet\Spreadsheet.csproj", "{7D7B213D-21F8-4C16-BF7B-BD96CE41294F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheet.Web", "Spreadsheet.Web\Spreadsheet.Web.csproj", "{748E4796-8664-4DD0-AF66-438629FEAD04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheet.Tests", "Spreadsheet.Tests\Spreadsheet.Tests.csproj", "{ACBDEFF9-CAD2-43BE-9A38-CFC3C3AEAC2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +20,10 @@ Global
 		{748E4796-8664-4DD0-AF66-438629FEAD04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{748E4796-8664-4DD0-AF66-438629FEAD04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{748E4796-8664-4DD0-AF66-438629FEAD04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACBDEFF9-CAD2-43BE-9A38-CFC3C3AEAC2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACBDEFF9-CAD2-43BE-9A38-CFC3C3AEAC2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACBDEFF9-CAD2-43BE-9A38-CFC3C3AEAC2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACBDEFF9-CAD2-43BE-9A38-CFC3C3AEAC2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

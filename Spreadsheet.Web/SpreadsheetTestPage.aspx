@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" %>
+<%@ Page Language="C#" AutoEventWireup="true" %>
 
 <%@ Register Assembly="System.Web.Silverlight" Namespace="System.Web.UI.SilverlightControls"
     TagPrefix="asp" %>
@@ -10,8 +10,8 @@
     <title>Spreadsheet</title>
     <style type="text/css">
     body {
-	    padding: 0;
-	    margin: 0;
+      padding: 0;
+      margin: 0;
     }
     </style>
 </head>
@@ -19,7 +19,7 @@
     <form id="form1" runat="server" style="height:500">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
         <div>
-            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" MinimumVersion="3.0.40307.0" Width="100%" Height="360" />
+            <asp:Silverlight ID="Silverlight1" runat="server" Source="~/ClientBin/Spreadsheet.xap" MinimumVersion="3.0.40307.0" Width="100%" Height="360" Windowless="True" />
         </div>
     </form>
 </body>
