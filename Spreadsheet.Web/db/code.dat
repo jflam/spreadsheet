@@ -1,5 +1,5 @@
-"\def total(*args):
+"]def total(*args):
     sum = 0
     for arg in args:
         sum += arg
-    return sum
+    return sum
